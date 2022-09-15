@@ -169,6 +169,14 @@ const main = async() => {
     },
   });
 
+  // Vote on GIF #0
+  await program.rpc.upvote(new anchor.BN(0), {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
   // Vote on GIF #1
   await program.rpc.upvote(new anchor.BN(1), {
     accounts: {
@@ -185,6 +193,14 @@ const main = async() => {
     }
   });
   
+  // Down-Vote on GIF #0
+  await program.rpc.downvote(new anchor.BN(0), {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
   // Call the account.
   account = await program.account.baseAccount.fetch(baseAccount.publicKey);
   console.log('👀 GIF Count', account.totalGifs.toString())

@@ -159,7 +159,7 @@ pub mod myepicproject {
   }
 
   // The function now accepts a gif_link param from the user. We also reference the user from the Context
-  pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> Result <()> {
+  pub fn add_gif(ctx: Context<BaseAccountAndUser>, gif_link: String) -> Result <()> {
     let base_account = &mut ctx.accounts.base_account;
     let user = &mut ctx.accounts.user;
 
@@ -176,22 +176,15 @@ pub mod myepicproject {
     Ok(())
   }
 
-  pub fn upvote(ctx: Context<Upvote>, index: u64) -> Result <()> {
-  // pub fn upvote(ctx: Context<AddGif>, index: u64) -> Result <()> {
+  pub fn upvote(ctx: Context<BaseAccountOnly>, index: u64) -> Result <()> {
     let base_account = &mut ctx.accounts.base_account;
-    // let _user = &mut ctx.accounts.user;
-    
     base_account.gif_list[index as usize].votes += 1;
-    // base_account.gif_list[0].votes += 1;
     Ok(())
   }
 
-  pub fn downvote(ctx: Context<Downvote>, index: u64) -> Result <()> {
-  // pub fn downvote(ctx: Context<AddGif>, index: u64) -> Result <()> {
-    let base_account = &mut ctx.accounts.base_account;
-    // let _user = &mut ctx.accounts.user;
-
-    base_account.gif_list[index as usize].votes -= 1;
+  pub fn downvote(ctx: Context<BaseAccountOnly>, index: u64) -> Result <()> {
+    (&mut ctx.accounts.base_account)
+      .gif_list[index as usize].votes -= 1;
     Ok(())
   }
 }
@@ -205,31 +198,18 @@ pub struct StartStuffOff<'info> {
   pub system_program: Program <'info, System>,
 }
 
-// Add the signer who calls the AddGif method to the struct so that we can save it
 #[derive(Accounts)]
-pub struct AddGif<'info> {
+pub struct BaseAccountAndUser<'info> {
   #[account(mut)]
   pub base_account: Account<'info, BaseAccount>,
   #[account(mut)]
   pub user: Signer<'info>,
 }
 
-// Add the signer who calls the Upvote method to the struct so that we can save it
 #[derive(Accounts)]
-pub struct Upvote<'info> {
+pub struct BaseAccountOnly<'info> {
   #[account(mut)]
   pub base_account: Account<'info, BaseAccount>,
-  #[account(mut)]
-  pub user: Signer<'info>,
-}
-
-// Add the signer who calls the Downvote method to the struct so that we can save it
-#[derive(Accounts)]
-pub struct Downvote<'info> {
-  #[account(mut)]
-  pub base_account: Account<'info, BaseAccount>,
-  #[account(mut)]
-  pub user: Signer<'info>,
 }
 
 // Create a custom struct for us to work with.
