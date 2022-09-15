@@ -116,6 +116,9 @@ const main = async() => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
+  // console.log('provider keys', JSON.stringify(Object.getOwnPropertyNames(provider)));
+  // return;
+
   const program = anchor.workspace.Myepicproject;
   const baseAccount = anchor.web3.Keypair.generate();
   let tx = await program.rpc.startStuffOff({
@@ -149,6 +152,37 @@ const main = async() => {
       baseAccount: baseAccount.publicKey,
       user: provider.wallet.publicKey,
     },
+  });
+  
+  // Call the account.
+  account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+  console.log('👀 GIF Count', account.totalGifs.toString())
+
+  // Access gif_list on the account!
+  console.log('👀 GIF List', account.gifList)
+
+  // Vote on GIF #0
+  await program.rpc.upvote(new anchor.BN(0), {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    },
+  });
+
+  // Vote on GIF #1
+  await program.rpc.upvote(new anchor.BN(1), {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    }
+  });
+
+  // Vote on GIF #0
+  await program.rpc.upvote(new anchor.BN(0), {
+    accounts: {
+      baseAccount: baseAccount.publicKey,
+      user: provider.wallet.publicKey,
+    }
   });
   
   // Call the account.

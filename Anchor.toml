@@ -1,18 +1,23 @@
 [features]
 seeds = false
 skip-lint = false
-[programs.localnet]
-myepicproject = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+
+# [programs.localnet]
+# myepicproject = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+
+[programs.devnet]
+myepicproject = "3TyU5TFCdqNdvt6yAtDpaQsX8xsJtjqEePTn3EL2tdnh"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+# cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/james/.config/solana/id.json"
 
 # [scripts]
 # test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 [scripts]
-#test = "node tests/myepicproject.ts"
+# test = "node tests/myepicproject.ts"
 test = "yarn ts-node tests/myepicproject.ts"
