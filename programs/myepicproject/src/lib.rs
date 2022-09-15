@@ -6,7 +6,10 @@ declare_id!("3TyU5TFCdqNdvt6yAtDpaQsX8xsJtjqEePTn3EL2tdnh"); // DevNet key
 
 #[program]
 pub mod myepicproject {
-  use super::*;
+  use anchor_lang::solana_program::{program::invoke, entrypoint::ProgramResult};
+
+use super::*;
+
   pub fn start_stuff_off(ctx: Context<StartStuffOff>) -> Result <()> {
     let base_account = &mut ctx.accounts.base_account;
     base_account.total_gifs = 0;
@@ -40,9 +43,50 @@ pub mod myepicproject {
   }
 
   pub fn upvote(ctx: Context<BaseAccountOnly>, index: u64) -> Result <()> {
+  // pub fn upvote(ctx: Context<BaseAccountUserAndSystem>, index: u64) -> Result <()> {
     let base_account = &mut ctx.accounts.base_account;
     base_account.gif_list[index as usize].votes += 1;
+    // if(base_account.gif_list[index as usize].votes == 5) {
+    //   sendBonus(
+    //     ctx,
+    //     base_account.gif_list[index as usize].user_address,
+    //     10_000_000
+    //   );
+    // }
     Ok(())
+  }
+
+  // pub fn sendBonus(ctx: Context<BaseAccountUserAndSystem>, to: Pubkey,amount: u64) -> Result <()> {
+  //   // let instruction = anchor_lang::solana_program::system_instruction::transfer(
+  //   //   // &ctx.accounts.from.key,
+  //   //   &ctx.accounts.base_account.key(),
+  //   //   // &ctx.accounts.to.key,
+  //   //   &to,
+  //   //   amount);
+  //   // invoke(
+  //   //   &instruction, 
+  //   //   &[
+  //   //     ctx.accounts.base_account.to_account_info().clone(),
+  //   //     AccountInfo::from(to),
+  //   //     ctx.accounts.system_program.to_account_info().clone(),
+  //   // ]);
+  //   ctx.accounts.system_program.???
+  //   Ok(())
+  // }
+
+  pub fn send_sol(ctx: Context<SendSol>, amount: u64) -> ProgramResult {
+    let ix = anchor_lang::solana_program::system_instruction::transfer(
+        &ctx.accounts.from.key(),
+        &ctx.accounts.to.key(),
+        amount,
+    );
+    anchor_lang::solana_program::program::invoke(
+        &ix,
+        &[
+            ctx.accounts.from.to_account_info(),
+            ctx.accounts.to.to_account_info(),
+        ],
+    )
   }
 
   pub fn downvote(ctx: Context<BaseAccountOnly>, index: u64) -> Result <()> {
@@ -62,6 +106,15 @@ pub struct StartStuffOff<'info> {
 }
 
 #[derive(Accounts)]
+pub struct BaseAccountUserAndSystem<'info> {
+  #[account(mut)]
+  pub base_account: Account<'info, BaseAccount>,
+  #[account(mut)]
+  pub user: Signer<'info>,
+  pub system_program: Program <'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct BaseAccountAndUser<'info> {
   #[account(mut)]
   pub base_account: Account<'info, BaseAccount>,
@@ -73,6 +126,32 @@ pub struct BaseAccountAndUser<'info> {
 pub struct BaseAccountOnly<'info> {
   #[account(mut)]
   pub base_account: Account<'info, BaseAccount>,
+}
+
+// #[derive(Accounts)]
+// pub struct Transfer<'info> {
+//     //#[account(mut, signer)]
+//     #[account(mut)]
+//     /// CHECK: This is not dangerous because we don't read or write from this account
+//     pub from: AccountInfo<'info>,       
+//     // /// CHECK: This is not dangerous because we don't read or write from this account
+//     // #[account(mut)]
+//     // pub to: AccountInfo<'info>,        
+//     /// CHECK: This is not dangerous because we don't read or write from this account
+//     pub system_program: AccountInfo<'info>,
+// }
+
+#[derive(Accounts)]
+pub struct SendSol<'info> {
+    //#[account(mut, signer)]
+    #[account(mut)]
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    pub from: AccountInfo<'info>,       
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    #[account(mut)]
+    pub to: AccountInfo<'info>,        
+    /// CHECK: This is not dangerous because we don't read or write from this account
+    pub system_program: AccountInfo<'info>,
 }
 
 // Create a custom struct for us to work with.

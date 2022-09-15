@@ -105,6 +105,16 @@ const main = async() => {
 
   // Access gif_list on the account!
   console.log('👀 GIF List', account.gifList)
+
+  // console.log(`Sending 0.001 SOL`);
+  // await program.rpc.sendSol(1e6, {
+  //   accounts: {
+  //     to: '2DZL45ZXetpDXrdAanpKGXYWYnBCBChUq5PbRQksJr97',
+  //     from: baseAccount.publicKey,
+  //     systemProgram: SystemProgram.programId,
+  //   }
+  // });
+  
 }
 
 const runMain = async () => {
